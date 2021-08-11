@@ -1,0 +1,22 @@
+name: "Get issues with label"
+description: "Gets issues in the repo based on specified label and state."
+author: "Anoop Tatti"
+branding:
+  icon: "alert-triangle"
+  color: "yellow"
+inputs:
+  githubToken:
+    description: "The GitHub Secret Token."
+    required: true
+  filterLabel:
+    description: "The label with which the issues are tagged."
+    required: true
+  filterState:
+    description: "The state of the issues."
+    required: true
+  flowUrl:
+    description: "The URL of the HTTP triggered flow."
+    required: true
+runs:
+  using: "node12"
+  main: "dist/index.js"
