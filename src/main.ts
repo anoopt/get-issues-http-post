@@ -49,13 +49,12 @@ async function run() {
 
         // Get the issues based on options
         const issues: any = await octokit.paginate(opts);
-        console.log(issues);
 
         // Build the requiredIssues object
         for (const issue of issues) {
             requiredIssues.push({
                 title: issue.title,
-                body: issue.body.substring(0, 100) + "...",
+                body: issue.body && issue.body.length > 100 ? issue.body.substring(0, 100) + "..." : issue.body,
                 url: issue.html_url,
                 assignedTo: issue.assignee ? issue.assignee.login : "None",
                 assignedToPic: issue.assignee ? issue.assignee.avatar_url : "https://github.com/anoopt/get-issues-http-post/raw/master/images/github.png"
