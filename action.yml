@@ -14,7 +14,7 @@ inputs:
   filterState:
     description: "The state of the issues."
     required: true
-  flowUrl:
+  httpEndpoint:
     description: "The URL of the HTTP triggered flow."
     required: true
 runs:

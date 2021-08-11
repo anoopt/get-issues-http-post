@@ -11,8 +11,8 @@ async function run() {
         // Get the GitHub token
         const githubToken = core.getInput('githubToken');
 
-        // URL of the HTTP triggered Flow
-        const flowUrl = core.getInput('flowUrl');
+        // URL of the HTTP triggered Flow / Logic App
+        const httpEndpoint = core.getInput('httpEndpoint');
 
         // Label on which issues need to be filtered e.g. bug, question etc
         const filterLabel = core.getInput('filterLabel');
@@ -33,10 +33,10 @@ async function run() {
         const subject = `List of issues labelled as ${filterLabel} that are open`;
 
         // Variable to to hold the object to send to Flow
-        let issuesObjToSend = {};
+        let issuesObjToSend: any = {};
 
         // Variable to hold the issues that are required
-        let requiredIssues = [];
+        let requiredIssues: any = [];
 
         // Build the options to get the required issues
         const opts = octokit.rest.issues.listForRepo.endpoint.merge({
@@ -45,10 +45,11 @@ async function run() {
             labels: filterLabel
         })
 
-        console.log("Getting issues...");
+        core.info("\u001b[93m⌛ Getting issues...");
 
         // Get the issues based on options
-        const issues: any = await octokit.paginate(opts)
+        const issues: any = await octokit.paginate(opts);
+        console.log(issues);
 
         // Build the requiredIssues object
         for (const issue of issues) {
@@ -57,34 +58,44 @@ async function run() {
                 body: issue.body.substring(0, 100) + "...",
                 url: issue.html_url,
                 assignedTo: issue.assignee ? issue.assignee.login : "None",
-                assignedToPic: issue.assignee? issue.assignee.avatar_url : "https://github.com/anoopt/get-issues-and-call-flow/raw/master/images/github.png"
+                assignedToPic: issue.assignee ? issue.assignee.avatar_url : "https://github.com/anoopt/get-issues-http-post/raw/master/images/github.png"
             })
         }
 
         // Log the issues
-        console.log("Required issues are:")
+        core.info("\u001b[32m✅ Required issues are:");
         console.log(requiredIssues);
 
         // Create the notification text that the user will see in their mobile
         const notificationText = `There are ${requiredIssues.length} issues marked as ${filterLabel} that are ${filterState} this week.`
 
         // Build the object to send to the Flow
-        issuesObjToSend = { githubUrl: filteredIssuesUrl, issues: requiredIssues, subject, notificationText }
+        issuesObjToSend = {
+            githubUrl: filteredIssuesUrl,
+            issues: requiredIssues,
+            subject,
+            notificationText
+        }
 
-        console.log("Send a request to the Flow...");
+        core.info("\u001b[93m⌛ Calling http endpoint...");
 
-        // Call the Flow
-        await fetch(flowUrl, {
+        await fetch(httpEndpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(issuesObjToSend)
+        }).then((result: any) => {
+            core.info("\u001b[32m✅ Data sent to the http end point");
+        }).catch((error: any) => {
+            core.error("\u001b[91m🚨 Error in calling the http end point.");
+            core.error(error);
+            core.setFailed(error);
         })
 
-        console.log("Data sent to Flow");
-
     } catch (error) {
+        core.error("\u001b[91m🚨 There was an error while running the action.");
+        core.error(error);
         core.setFailed(error.message);
     }
 }
