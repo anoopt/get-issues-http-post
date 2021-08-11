@@ -1,0 +1,25 @@
+{
+  "name": "ga-get-issues-http-post",
+  "version": "1.0.0",
+  "description": "GitHub Action to get issues based on a label",
+  "main": "lib/main.js",
+  "scripts": {
+    "build": "tsc",
+    "package": "ncc build",
+    "all": "npm run build && npm run package"
+  },
+  "author": "anoopt",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^1.4.0",
+    "@actions/github": "^5.0.0",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^16.4.13",
+    "@types/node-fetch": "^2.5.12",
+    "@vercel/ncc": "^0.29.0",
+    "tslint": "^6.1.3",
+    "typescript": "^4.3.5"
+  }
+}
