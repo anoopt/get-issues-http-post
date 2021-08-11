@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get issues and call flow using action 
-        uses: anoopt/get-issues-and-call-flow@master
+        uses: anoopt/get-issues-http-post@main
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           filterLabel: bug
